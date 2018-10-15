@@ -1,6 +1,17 @@
 public class Life {
+	
+/*	public int change(String key){
+		switch(key){
+			case "Food":
+			{
+								
+			}
+		}
+		return 1;
+	}
+	*/
     public static int food (int state) {
-        IO.activity = true;
+        Zevs.activity = true;
         try {
             System.out.println("Кушаю...");
             Thread.sleep(1000);
@@ -10,17 +21,19 @@ public class Life {
             Thread.sleep(3000);
             System.out.println("Все! Спасибо большое!");
         } catch (InterruptedException e) {
-            System.out.println("Минуточку...");
+            System.out.println("Минуточку..."+e.getMessage());
         }
         state += 10;
         if (state > 100) {
             state = 100;
+            
+          
         }
         return state;
     }
 
     public static int bath(int state) {
-        IO.activity = true;
+        Zevs.activity = true;
         try {
             System.out.println("Надо наполнить ванную...");
             Thread.sleep(1000);
@@ -41,7 +54,7 @@ public class Life {
     }
 
     public static int toilet(int state) {
-        IO.activity = true;
+        Zevs.activity = true;
         try {
             System.out.println("Мне нужно отлучиться на минуточку...");
             Thread.sleep(1000);
@@ -59,7 +72,7 @@ public class Life {
     }
 
     public static int sleeping(int state) {
-        IO.activity = true;
+        Zevs.activity = true;
         try {
             System.out.println("Пора отдыхать. Добрых снов мне!");
             Thread.sleep(1000);
