@@ -1,40 +1,54 @@
 import org.junit.Test;
 import org.testng.Assert;
 
+import java.util.Date;
 import java.util.HashMap;
-
-import static org.junit.Assert.*;
 
 public class BotTest {
 
     @Test
-    public void minus() {
-        Assert.assertEquals(Bot.minus("Питание"), 20);
-        Assert.assertEquals(Bot.minus("Сон"), 100);
-        Assert.assertEquals(Bot.minus("Туалет"), 50);
-        Assert.assertEquals(Bot.minus("Счастье"), 10);
-        Assert.assertEquals(Bot.minus("Гигиена"), 15);
-        Assert.assertEquals(Bot.minus("Тататата"), 0);
+    public void reply_txt() {
+        Bot bot = new Bot();
+        Assert.assertEquals(bot.reply("Питание", "10"), "Я родился!");
+        Assert.assertEquals(bot.reply("Питание", "10"), "Сейчас я буду кушать, сейчас меня покормят!");
+        Assert.assertEquals(bot.reply("Сон", "10"), "Я ложусь спать, не беспокой меня несколько минут!");
+        Assert.assertEquals(bot.reply("Туалет", "10"), "Секундочку, я отлучусь...");
+        Assert.assertEquals(bot.reply("Счастье", "10"), "Я так рад, что ты у меня есть!");
+        Assert.assertEquals(bot.reply("Гигиена", "10"), "А сейчас я хочу расслабиться и принять ванну");
+        Assert.assertEquals(bot.reply("Трататата", "10"), "Я не знаю такой команды! Если хочешь узнать список доступных, введи \"Команды\"");
+        Assert.assertEquals(bot.reply("Счастье", "15"), "Я родился!");
     }
     @Test
-    public void reply() {
-        HashMap<String, Needs> expected = Bot.TamagochyMap;
-        Needs needs = new Needs();
-        expected.put("10", needs);
-        Assert.assertEquals(Bot.reply("Питание", "10"),"Сейчас я буду кушать, сейчас меня покормят!");
-        Assert.assertEquals(Bot.reply("Сон", "10"),"Я ложусь спать, не беспокой меня несколько минут!");
-        Assert.assertEquals(Bot.reply("Туалет", "10"),"Секундочку, я отлучусь...");
-        Assert.assertEquals(Bot.reply("Счастье", "10"),"Я так рад, что ты у меня есть!");
-        Assert.assertEquals(Bot.reply("Гигиена", "10"),"А сейчас я хочу расслабиться и принять ванну");
-        Assert.assertEquals(Bot.reply("Трататата", "10"),"Я не знаю такой команды! Если хочешь узнать список доступных, введи \"Команды\"");
-        Assert.assertEquals(Bot.reply("Счастье", "15"),"Я родился!");
-        Bot.reply("Счастье", "15");
-        needs = new Needs();
-        expected.put("15", needs);
-        Assert.assertEquals(Bot.TamagochyMap, expected);
-        needs.Down("Питание", 50);
-        Bot.TamagochyMap.put("20", needs);
+    public void reply_creater() {
+        Bot bot = new Bot();
+        Bot expected = new Bot();
+        Pet pet = new Pet();
+        bot.reply("Счастье", "20");
+        expected.setTamagochyMap("20", pet);
+        Assert.assertEquals(bot.getTamagochyMap().size(), expected.getTamagochyMap().size());
+
+        pet.Down("Питание", 50);
+        bot.setTamagochyMap("20", pet);
         String expectStates = "Сон: 100 || Счастье: 100 || Гигиена: 100 || Питание: 50 || Туалет: 100 || ";
-        Assert.assertEquals(Bot.reply("Проверка", "20"), expectStates);
+        Assert.assertEquals(bot.reply("Проверка", "20"), expectStates);
+
+    }
+    @Test
+    public void getDeathCount_test() {
+        Date currentDate = new Date();
+        Bot bot = new Bot();
+        int count = bot.getDeathCount(currentDate);
+        Assert.assertEquals(count, 0);
+
+        currentDate = new Date();
+        Date testDate = new Date(currentDate.getTime() + 7000);
+        count = bot.getDeathCount(testDate);
+        Assert.assertEquals(count, 0);
+
+        currentDate = new Date();
+        testDate = new Date(currentDate.getTime() + 20000);
+        count = bot.getDeathCount(testDate);
+        Assert.assertEquals(count, 2);
+
     }
 }
