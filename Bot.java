@@ -28,9 +28,6 @@ public class Bot {
         Events.remove(0);
     }
 
-//    public void printEvent() {
-//        Events.get(0).printEvent();
-//    }
 
     Bot() {
         TamagochyMap = new HashMap<String, Pet>();
