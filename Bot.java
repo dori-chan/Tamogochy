@@ -1,41 +1,52 @@
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 
 public class Bot {
-    public static HashMap<String, Needs> TamagochyMap = new HashMap<String, Needs>();
-    public static ArrayList<Event> events = new ArrayList<Event>();
-    public static int minus(String input) {
+    private HashMap<String, Pet> TamagochyMap;
+    private ArrayList<Event> Events;
+    private int DeathTime = 10;
 
-        switch (input) {
-            case "Питание": {
-                return 20;
-            }
-            case "Сон": {
-
-                return 100;
-            }
-            case "Туалет": {
-                return 50;
-            }
-            case "Счастье": {
-                return 10;
-            }
-            case "Гигиена": {
-                return 15;
-            }
-            default:
-                break;
-        }
-        return 0;
+    public ArrayList<Event> getEvents() {
+        return Events;
     }
-    public static String reply(String input, String ID) {
-        if (!Bot.TamagochyMap.containsKey(ID)) {
-            Needs needs = new Needs();
-            Bot.TamagochyMap.put(ID, needs);
+
+    public HashMap<String, Pet> getTamagochyMap() {
+        return TamagochyMap;
+    }
+
+    public void setTamagochyMap(String id, Pet pet) {
+        TamagochyMap.put(id, pet);
+    }
+
+    public void setEvents(Event event) {
+        Events.add(event);
+    }
+
+    public void removeEvent() {
+        Events.remove(0);
+    }
+
+//    public void printEvent() {
+//        Events.get(0).printEvent();
+//    }
+
+    Bot() {
+        TamagochyMap = new HashMap<String, Pet>();
+        Events = new ArrayList<Event>();
+    }
+
+    public String reply(String input, String ID) {
+        if (!TamagochyMap.containsKey(ID) || !TamagochyMap.get(ID).alive) {
+            Pet needs = new Pet();
+            TamagochyMap.put(ID, needs);
             return "Я родился!";
         }
+        if (!TamagochyMap.get(ID).alive) {
+            return "Кажется, это конец... Чтобы начать новую игру, введи любое сообщение";
+        }
         switch (input) {
-
             case "Питание": {
                 return "Сейчас я буду кушать, сейчас меня покормят!";
             }
@@ -55,14 +66,47 @@ public class Bot {
                 return Texts.commands;
             }
             case "Проверка": {
-                return Bot.TamagochyMap.get(ID).getStates();
+                return TamagochyMap.get(ID).getStates();
             }
             default:
                 return "Я не знаю такой команды! Если хочешь узнать список доступных, введи \"Команды\"";
         }
 
     }
+
+    public int getDeathCount(Date date) {
+        Date currentDate = new Date();
+        long difference = currentDate.getTime() - date.getTime();
+        int sec = (int) (difference / 1000);
+        return Math.abs(sec / DeathTime);
+    }
+
+    public void EventHandler(String input, String ID) {
+        if (Arrays.asList(Texts.needs).contains(input) && TamagochyMap.containsKey(ID)) {
+            Event event = new Event(input, ID, this, new Date());
+            Events.add(event);
+        }
+        if (!TamagochyMap.isEmpty() && TamagochyMap.get(ID).alive) {
+            Date currentDate = new Date();
+            int coeff = getDeathCount(TamagochyMap.get(ID).getLastUpdate());
+            if (coeff > 0) {
+                Event death = new Death(this, ID, coeff);
+                Events.add(death);
+            }
+            if (Events.size() != 0) {
+                for (int i = Events.size() - 1; i >= 0; i--) {
+                    {
+                        if (Events.get(i).When.before(currentDate)) {
+                            Events.get(i).apply();
+                            Events.remove(i);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
+
 
 
 
